@@ -1,6 +1,6 @@
 # Homework 5: Policy Gradients
 
-For this homework you may work in groups of up to 3 students. Turn in one submission for your group with all your team members' names when submit to Canvas.
+For this homework you may work in groups of up to 3 students. Turn in one submission for your group with all your team members' names when submit to Canvas. Submit all source code along with a writeup that answers and discusses the questions and experiments below.
 
 ## Setup
 You should use the rl_env conda environment that you set up for [Homework 4](https://github.com/dsbrown1331/q-learning-homework) This should have almost all the packages you need. The only thing missing that will need to add is scipy. To install this just activate your environment and call `conda install scipy`. 
