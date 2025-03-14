@@ -47,12 +47,13 @@ Report on what environment you chose and the results of using your code. You may
 
 Now we want to actually learn a value function to use as a baseline. We will still use the reward to go but will subtract off the baseline  $$b(s_t) = \hat{V}(s_t)$$, where $$\hat{V}(s_t)$$ is the approximate value function of the policy. We will be approximating the value function using a neural network. The good news for you is that this is already setup if you are using the `MLPActorCritic` class. If you're not using that class go back and follow the instructions for Part 3a. 
 
-We've got a neural network but we need to train it. As mentioned in the tutorial we've been following, the simplest way to train a value function is via a standard MSE loss. Let's add that to our code. You will now have two PyTorch optimizers, one for the policy and one for the value function. You will still collect a batch of on-policy data. Same as before you'll update the policy using a policy gradient, but now you will subtract off the value of each state when computing this update. You will also update the value function using each batch of data via a standard MSE loss. You will be simply pushing the predicted value of each state with the true cumulative return experienced in the batch (the reward-to-go from that state). 
-
-Test out your implementation on CartPole and a continuous action environment of your choice. Report on your results and how they compare to performance without a baseline.
+We've got a neural network but we need to train it. As mentioned in the tutorial we've been following, the simplest way to train a value function is via a standard MSE loss. Let's add that to our code. You will now have two PyTorch optimizers, one for the policy and one for the value function. You will still collect a batch of on-policy data. Same as before you'll update the policy using a policy gradient, but now you will subtract off the value of each state when computing this update. You will also update the value function using each batch of data via a standard MSE loss. You will be simply pushing the predicted value of each state with the true cumulative return experienced in the batch (the reward-to-go from that state). Note that to improve stability, you will probably want to perform several gradient steps of value learning for each step of policy update.
 
 After working on this for a while, if you're really stuck, you can take a look here at this vanilla policy gradient code that also uses `core.py`: https://github.com/openai/spinningup/blob/master/spinup/algos/pytorch/vpg/vpg.py
 Note this code uses Generalized Advantage Estimation and some parallelization using mpi.
+
+Test out your implementation on CartPole and a continuous action environment of your choice. Report on your results and how they compare to performance without a baseline.
+
 
 ## Extra Credit A:
 
