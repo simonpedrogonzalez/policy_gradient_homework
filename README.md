@@ -1,4 +1,4 @@
-# policy_gradient_homework
+# Homework 5: Policy Gradients
 
 For this homework you may work in groups of up to 3 students. Turn in one submission for your group with all your team members' names when submit to Canvas.
 
