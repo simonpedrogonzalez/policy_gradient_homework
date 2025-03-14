@@ -57,7 +57,7 @@ Test out your implementation on CartPole and a continuous action environment of 
 
 ## Extra Credit A:
 
-Go through the vanilla policy gradient [documentation](https://spinningup.openai.com/en/latest/algorithms/vpg.html) and [implementation] (https://github.com/openai/spinningup/tree/master/spinup/algos/pytorch/vpg and the PPO [documentation](https://spinningup.openai.com/en/latest/algorithms/ppo.html) and [implementation](https://github.com/openai/spinningup/tree/master/spinup/algos/pytorch/ppo and read through the code). Remember, AI can be your friend here and help you understand complex lines of code. Write about what is different in these implementations compared to your simple policy gradient code. What is the same. What things did you learn while going through the code.
+Go through the vanilla policy gradient [documentation](https://spinningup.openai.com/en/latest/algorithms/vpg.html) and [implementation](https://github.com/openai/spinningup/tree/master/spinup/algos/pytorch/vpg) and the PPO [documentation](https://spinningup.openai.com/en/latest/algorithms/ppo.html) and [implementation](https://github.com/openai/spinningup/tree/master/spinup/algos/pytorch/ppo) and read through the code. Remember, AI can be your friend here and help you understand complex lines of code. Write about what is different in these implementations compared to your simple policy gradient code. What is the same. What things did you learn while going through the code.
 
 ## Extra Credit B [Advanced].
 
