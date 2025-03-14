@@ -8,7 +8,7 @@ You should use the rl_env conda environment that you set up for [Homework 4](htt
 ## Part 1a: Understanding and Implementing a Basic Policy Gradient Algorithm
 Read through [Part 1](https://spinningup.openai.com/en/latest/spinningup/rl_intro.html) and [Part 2](https://spinningup.openai.com/en/latest/spinningup/rl_intro2.html) of the Policy Gradient Tutorial on SpinningUp.
 
-Now start [Part 3] (https://spinningup.openai.com/en/latest/spinningup/rl_intro3.html)
+Now start [Part 3](https://spinningup.openai.com/en/latest/spinningup/rl_intro3.html)
 This tutorial will walk you through the most basic policy gradient implementation. Follow along with the tutorial and stop before the "Expected Grad-Log-Prob Lemma" section.
 Now take a look at `.\1_simple_pg_gymnasium.py` in this gitrepo (this is just an updated version of what is in the SpinningUp tutorial adapted to use gymnasium rather than the deprecated gym).
 Make sure that everyone on your team understands each line: play around with the code, add some print lines, run through using a debugger, copy and paste code into your favorite AI program to have it explain parts that are confusing, etc. 
