@@ -6,11 +6,9 @@ For this homework you may work in groups of up to 3 students. Turn in one submis
 You should use the rl_env conda environment that you set up for [Homework 4](https://github.com/dsbrown1331/q-learning-homework) This should have almost all the packages you need. The only thing missing that will need to add is scipy. To install this just activate your environment and call `conda install scipy`. 
 
 ## Part 1a: Understanding and Implementing a Basic Policy Gradient Algorithm
-Read through Part 1 and Part 2 of the Policy Gradient Tutorial here: 
-https://spinningup.openai.com/en/latest/spinningup/rl_intro.html
-https://spinningup.openai.com/en/latest/spinningup/rl_intro2.html
-Now start Part 3: 
-https://spinningup.openai.com/en/latest/spinningup/rl_intro3.html
+Read through [Part 1](https://spinningup.openai.com/en/latest/spinningup/rl_intro.html) and [Part 2](https://spinningup.openai.com/en/latest/spinningup/rl_intro2.html) of the Policy Gradient Tutorial on SpinningUp.
+
+Now start [Part 3] (https://spinningup.openai.com/en/latest/spinningup/rl_intro3.html)
 This tutorial will walk you through the most basic policy gradient implementation. Follow along with the tutorial and stop before the "Expected Grad-Log-Prob Lemma" section.
 Now take a look at `.\1_simple_pg_gymnasium.py` in this gitrepo (this is just an updated version of what is in the SpinningUp tutorial adapted to use gymnasium rather than the deprecated gym).
 Make sure that everyone on your team understands each line: play around with the code, add some print lines, run through using a debugger, copy and paste code into your favorite AI program to have it explain parts that are confusing, etc. 
@@ -18,7 +16,7 @@ You can run the code by calling
 `
 python 1_simple_pg_gymnasium.py
 `
-This will run a simple policy gradient algorithm on the CartPole environment, a classic RL control benchmark. Read up on CartPole here: https://gymnasium.farama.org/environments/classic_control/cart_pole/.
+This will run a simple policy gradient algorithm on the CartPole environment, a classic RL control benchmark. Read up on CartPole [here](https://gymnasium.farama.org/environments/classic_control/cart_pole/.)
 
 You won't see anything except printouts showing learning over time. By default it will run for 50 epochs. Feel free to play around with and change any of the hyperparameters and code. **Report on what you see and what it means. Is the agent learning? What happens to it's performance over time? Is it monotonically improving? Discuss why you think that is.**
 
@@ -28,7 +26,7 @@ It's kind of boring to not see learning happening. Edit the code so that after e
 
 ## Part 2: Reducing Variance with Reward-to-Go
 
-Continue reading the tutorial from here: https://spinningup.openai.com/en/latest/spinningup/rl_intro3.html#expected-grad-log-prob-lemma
+Continue reading the tutorial from [here](https://spinningup.openai.com/en/latest/spinningup/rl_intro3.html#expected-grad-log-prob-lemma)
 and read through the section "Implementing Reward-to-Go Policy Gradient". 
 Make a copy of your simple policy gradient code and make the recommended changes to your code so that you implement the reward-to-go version. Make sure you understand what is going on.
 
@@ -41,7 +39,7 @@ We will now explore using a baseline. To start with, let's first make our code m
 
 Create an updated version of your policy gradient code that works for either continuous or discrete action spaces using the helper functions in `core.py`. Note you won't need to worry about the `discount_cumsum` method, just focus on using the `MLPActorCritic` class in your code. We won't be using the value function prediction from the critic yet but we will in the next section. For now you can just leave it as a random network and ignore the v output when calling step.
 
-You should now be able to run both continuous and discrete action domains. Test your code on CartPole to make sure it still works on a discrete action environment. Next pick a continuous action environment from Gymnasium to test your code. Pendulum (https://gymnasium.farama.org/environments/classic_control/pendulum/) is probably one of the simplest continuous action and is a good choice if you want something that runs fast. You can also look at some of the MuJoCo locomotion tasks (https://gymnasium.farama.org/environments/mujoco/). InvertedPendulum is also pretty simple. Hopper is a bit more complex but more interesting and you should see learning happen. Some of the others are quite complex so I wouldn't recommend trying them without a good CPU and GPU and a better codebase than what we've been playing around with.
+You should now be able to run both continuous and discrete action domains. Test your code on CartPole to make sure it still works on a discrete action environment. Next pick a continuous action environment from Gymnasium to test your code. [Pendulum] (https://gymnasium.farama.org/environments/classic_control/pendulum/) is probably one of the simplest continuous action and is a good choice if you want something that runs fast. You can also look at some of the [MuJoCo locomotion tasks](https://gymnasium.farama.org/environments/mujoco/). InvertedPendulum is also pretty simple. Hopper is a bit more complex but more interesting and you should see learning happen. Some of the others are quite complex so I wouldn't recommend trying them without a good CPU and GPU and a better codebase than what we've been playing around with.
 
 Report on what environment you chose and the results of using your code. You may want to play around with hyperparameters a bit to see what works best. Report what you tried and learned.
 
