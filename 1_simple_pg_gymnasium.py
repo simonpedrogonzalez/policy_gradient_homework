@@ -44,6 +44,22 @@ def train(env_name='CartPole-v1', hidden_sizes=[32], lr=1e-2,
         logp = get_policy(obs).log_prob(act)
         return -(logp * weights).mean()
 
+    # Let's see what is happening
+    def visualize_one_rollout(env, policy):
+        env = gym.make(env_name, render_mode='human')
+        obs, info = env.reset()
+        done = False
+        cumulative_rew = 0
+        while not done:
+            env.render()
+            with torch.no_grad():
+                act = policy(torch.as_tensor(obs, dtype=torch.float32))
+            obs, rew, done, truncated, info = env.step(act)
+            done = done or truncated
+            cumulative_rew += rew
+        env.close()
+        print(f'Rollout cumulative reward: {round(cumulative_rew, 3)}')
+
     # make optimizer
     optimizer = Adam(logits_net.parameters(), lr=lr)
 
@@ -116,8 +132,15 @@ def train(env_name='CartPole-v1', hidden_sizes=[32], lr=1e-2,
     # training loop
     for i in range(epochs):
         batch_loss, batch_rets, batch_lens = train_one_epoch()
+        
+        # Every 10 epochs otherwise it's difficult to
+        # notice a difference
+        if i % 10 == 0:
+            visualize_one_rollout(env, get_action)
         print('epoch: %3d \t loss: %.3f \t return: %.3f \t ep_len: %.3f'%
                 (i, batch_loss, np.mean(batch_rets), np.mean(batch_lens)))
+
+
 
 if __name__ == '__main__':
     import argparse
