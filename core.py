@@ -129,7 +129,14 @@ class MLPActorCritic(nn.Module):
             a = pi.sample()
             logp_a = self.pi._log_prob_from_distribution(pi, a)
             v = self.v(obs)
-        return a.numpy(), v.numpy(), logp_a.numpy()
+        return a, v, logp_a
 
     def act(self, obs):
         return self.step(obs)[0]
+    
+    def step_grad(self, obs):
+        pi = self.pi._distribution(obs)
+        a = pi.sample()
+        logp_a = self.pi._log_prob_from_distribution(pi, a)
+        v = self.v(obs)
+        return a, v, logp_a
