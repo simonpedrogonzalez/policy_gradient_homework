@@ -124,28 +124,19 @@ class MLPActorCritic(nn.Module):
         self.v  = MLPCritic(obs_dim, hidden_sizes, activation)
 
     def step(self, obs):
-        obs = torch.as_tensor(obs, dtype=torch.float32)
         with torch.no_grad():
             pi = self.pi._distribution(obs)
             a = pi.sample()
             logp_a = self.pi._log_prob_from_distribution(pi, a)
             v = self.v(obs)
-        return a.numpy(), v.numpy(), logp_a.numpy()
-
-    # def step(self, obs):
-    #     obs = torch.as_tensor(obs, dtype=torch.float32)
-    #     pi = self.pi._distribution(obs)
-    #     a = pi.sample()
-    #     logp_a = self.pi._log_prob_from_distribution(pi, a)
-    #     v = self.v(obs)
-    #     return a, v, logp_a # as tensor to preserve gradient
+        return a, v, logp_a
 
     def act(self, obs):
         return self.step(obs)[0]
-
-    def get_logps(self, obs, acts):
-        # with gradient
-        pi = self.pi._distribution(obs)
-        return self.pi._log_prob_from_distribution(pi, acts)
     
-
+    def step_grad(self, obs):
+        pi = self.pi._distribution(obs)
+        a = pi.sample()
+        logp_a = self.pi._log_prob_from_distribution(pi, a)
+        v = self.v(obs)
+        return a, v, logp_a

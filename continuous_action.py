@@ -152,15 +152,15 @@ def train(env, env_render=None, n_epochs=50):
 
 # CartPole
 
-env = gym.make('CartPole-v1')
-rets = train(env, n_epochs=50)
-epochs = list(range(1, len(rets)+1))
-sns.lineplot(x=epochs, y=rets)
-plt.xlabel('Epochs')
-plt.ylabel('Returns')
-plt.tight_layout()
-plt.savefig('test_pole.png')
-env.close()
+# env = gym.make('CartPole-v1')
+# rets = train(env, n_epochs=50)
+# epochs = list(range(1, len(rets)+1))
+# sns.lineplot(x=epochs, y=rets)
+# plt.xlabel('Epochs')
+# plt.ylabel('Returns')
+# plt.tight_layout()
+# plt.savefig('test_pole.png')
+# env.close()
 
 # Hopper
 
