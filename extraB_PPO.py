@@ -16,7 +16,10 @@ def train(
     epochs=50, 
     batch_size=5000,
     v_iter=80,
+    pi_iter=80,
     discount=0.99, lam=0.95,
+    eps=0.2, # clip ratio
+    target_kl=0.01, # early stopping for KL divergence
     visualize=False):
 
     env = gym.make(env_name)
@@ -28,10 +31,9 @@ def train(
     def train_one_epoch():
         batch_obs = []
         batch_acts = []
-        batch_rews = []
         batch_rets = []
-        batch_values = []
         batch_advs = []
+        batch_logps = []
 
         obs, info = env.reset()
         done = False
@@ -54,6 +56,7 @@ def train(
 
             batch_obs.append(obs.copy())
             batch_acts.append(act)
+            batch_logps.append(logp)
             
             ep_rews.append(r)
             ep_values.append(v)
@@ -85,30 +88,49 @@ def train(
                 
                 if len(batch_obs) > batch_size:
                     break
+        
+        # Get obs and acts
+        if isinstance(env.action_space, gym.spaces.Discrete):
+                act_tensor = torch.as_tensor(np.array(batch_acts), dtype=torch.int32)
+        elif isinstance(env.action_space, gym.spaces.Box):
+            act_tensor = torch.as_tensor(np.array(batch_acts), dtype=torch.float32)
+        obs_tensor = torch.as_tensor(np.array(batch_obs), dtype=torch.float32)
 
         # Normalize advantages
         batch_advs = np.array(batch_advs)
         batch_advs = (batch_advs - batch_advs.mean()) / (batch_advs.std() + 1e-8)
         adv_tensor = torch.as_tensor(batch_advs, dtype=torch.float32)
 
-        # Get log probabilities
-        if isinstance(env.action_space, gym.spaces.Discrete):
-            act_tensor = torch.as_tensor(np.array(batch_acts), dtype=torch.int32)
-        elif isinstance(env.action_space, gym.spaces.Box):
-            act_tensor = torch.as_tensor(np.array(batch_acts), dtype=torch.float32)
-        obs_tensor = torch.as_tensor(np.array(batch_obs), dtype=torch.float32)
+        # Get old log probabilities
+        old_logps_tensor = torch.as_tensor(np.array(batch_logps), dtype=torch.float32)
 
-        _, logps_tensor = ac.pi(obs_tensor, act_tensor)
+        # Policy Learning
+        for _ in range(pi_iter):
+            # Get new log probabilities
+            _, logps_tensor = ac.pi(obs_tensor, act_tensor)
 
-        # Compute Actor Loss
-        loss = -(logps_tensor * adv_tensor).mean()
+            lopgps_diff = logps_tensor - old_logps_tensor
+            
+            # Compute KL divergence and check for early stopping
+            kl = (lopgps_diff).mean()
+            if kl > 1.5 * target_kl:
+                break
+            
+            # Compute g(eps, A)
+            # p_new / p_old = exp(log(p_new) - log(p_old))
+            logps_ratio = torch.exp(lopgps_diff) 
+            g_eps_A = torch.clamp(logps_ratio, 1 - eps, 1 + eps) * adv_tensor
+            
+            # Compute loss
+            loss = -(torch.min(logps_ratio * adv_tensor, g_eps_A)).mean()
 
-        # Update the Actor
-        optimizer.zero_grad()
-        loss.backward()
-        optimizer.step()
+            # Update the Actor
+            optimizer.zero_grad()
+            loss.backward()
+            optimizer.step()
 
-        # Update the Critic
+            
+        # Critic Learning
         loss_v_acc = 0
         R = torch.as_tensor(np.array(batch_rets), dtype=torch.float32)
         for _ in range(v_iter):
@@ -130,9 +152,19 @@ def train(
         dt_s = t1 - t0
         print(f'Epoch {i:>2d} \t Return: {np.mean(rets):.3f} \t PLoss: {loss_pi:.3f} \t VLoss: {loss_v:.3f} \t EpLen: {np.mean(lens):.2f} \t Time: {dt_s:.2f}')
         all_returns.append(np.mean(rets))
+        
+    save_dict = {
+        'actor': ac.pi.state_dict(),
+        'critic': ac.v.state_dict(),
+        'optimizer': optimizer.state_dict(),
+        'optimizer_v': optimizer_v.state_dict(),
+        'epoch': i
+    }
+    torch.save(save_dict, f'ppo_{env_name}.pt')
+        
 
     if visualize:
-        for _ in range(5):
+        while True:
             input('Press Enter to visualize a rollout')
             visualize_rollout(env_name, lambda obs: ac.act(obs))
 
@@ -142,35 +174,37 @@ def train(
 if __name__ == '__main__':
 
     # Replication of CartPole-v1 results
-    # epochs = list(range(50))
-    # rs = []
-    # for _ in range(5):
-    #     rets = train(
-    #         env_name='CartPole-v1'
-    #     )
+    epochs = list(range(50))
+    rs = []
+    for _ in range(5):
+        rets = train(
+            env_name='CartPole-v1'
+        )
 
-    #     rs.append(rets)
-    # df = pd.DataFrame({
-    #     'returns': [r for rs_ in rs for r in rs_],
-    #     'epochs': epochs * 5,
-    #     'method': 'GAE'
-    # })
+        rs.append(rets)
+    df = pd.DataFrame({
+        'returns': [r for rs_ in rs for r in rs_],
+        'epochs': epochs * 5,
+        'method': 'PPO'
+    })
 
-    # df.to_csv('advantage_cartpole.csv')
+    # this is GAE
+    df1 = pd.read_csv('advantage_cartpole.csv')
 
-    # # load rewards_to_go_vs_vanilla.csv
-    # df2 = pd.read_csv('reward_to_go_vs_vanilla.csv')
-    # # join the two dataframes
-    # df = pd.concat([df, df2])
-
-    # sns.lineplot(x='epochs', y='returns', hue='method', data=df)
-    # plt.xlabel('Epochs')
-    # plt.ylabel('Returns')
-    # plt.tight_layout()
-    # plt.savefig('advantage_cartpole.png')
-
-
+    # load rewards_to_go_vs_vanilla.csv
+    df2 = pd.read_csv('reward_to_go_vs_vanilla.csv')
+    # join the two dataframes
+    df = pd.concat([df, df1, df2])
     
+    df.to_csv('cartpole_all.csv')
+
+    sns.lineplot(x='epochs', y='returns', hue='method', data=df)
+    plt.xlabel('Epochs')
+    plt.ylabel('Returns')
+    plt.tight_layout()
+    plt.savefig('cartpole_all.png')
+
+
     # Hopper-v5
     
     rs = []
@@ -182,8 +216,7 @@ if __name__ == '__main__':
             batch_size=5000,
             visualize=False,
             lr=1e-3,
-            lrv=1e-2,
-            v_iter=80
+            lrv=1e-2
         )
         rs.append(rets)
 
@@ -192,16 +225,17 @@ if __name__ == '__main__':
     df = pd.DataFrame({
         'returns': [r for rs_ in rs for r in rs_],
         'epochs': epochs * 5,
-        'method': 'GAE'
+        'method': 'PPO'
     })
     
-    df2 = pd.read_csv('hopper_v5_reward_to_go.csv')
+    # this is GAE and r2g
+    df2 = pd.read_csv('advantage_hopper_v5_2nd_test.csv')
     df = pd.concat([df, df2])
-    df.to_csv('advantage_hopper_v5_2nd_test.csv')
+    df.to_csv('hopper_all.csv')
 
     sns.lineplot(x='epochs', y='returns', hue='method', data=df)
     plt.xlabel('Epochs')
     plt.ylabel('Returns')
     plt.tight_layout()
-    plt.savefig('advantage_hopper_v5_2nd_test.png')
+    plt.savefig('hopper_all.png')
 

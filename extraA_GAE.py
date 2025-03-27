@@ -28,9 +28,7 @@ def train(
     def train_one_epoch():
         batch_obs = []
         batch_acts = []
-        batch_rews = []
         batch_rets = []
-        batch_values = []
         batch_advs = []
 
         obs, info = env.reset()
@@ -142,32 +140,30 @@ def train(
 if __name__ == '__main__':
 
     # Replication of CartPole-v1 results
-    # epochs = list(range(50))
-    # rs = []
-    # for _ in range(5):
-    #     rets = train(
-    #         env_name='CartPole-v1'
-    #     )
+    epochs = list(range(50))
+    rs = []
+    for _ in range(5):
+        rets = train(
+            env_name='CartPole-v1'
+        )
 
-    #     rs.append(rets)
-    # df = pd.DataFrame({
-    #     'returns': [r for rs_ in rs for r in rs_],
-    #     'epochs': epochs * 5,
-    #     'method': 'GAE'
-    # })
+        rs.append(rets)
+    df = pd.DataFrame({
+        'returns': [r for rs_ in rs for r in rs_],
+        'epochs': epochs * 5,
+        'method': 'GAE'
+    })
 
-    # df.to_csv('advantage_cartpole.csv')
+    df.to_csv('advantage_cartpole.csv')
 
-    # # load rewards_to_go_vs_vanilla.csv
-    # df2 = pd.read_csv('reward_to_go_vs_vanilla.csv')
-    # # join the two dataframes
-    # df = pd.concat([df, df2])
+    df2 = pd.read_csv('reward_to_go_vs_vanilla.csv')
+    df = pd.concat([df, df2])
 
-    # sns.lineplot(x='epochs', y='returns', hue='method', data=df)
-    # plt.xlabel('Epochs')
-    # plt.ylabel('Returns')
-    # plt.tight_layout()
-    # plt.savefig('advantage_cartpole.png')
+    sns.lineplot(x='epochs', y='returns', hue='method', data=df)
+    plt.xlabel('Epochs')
+    plt.ylabel('Returns')
+    plt.tight_layout()
+    plt.savefig('advantage_cartpole.png')
 
 
     

@@ -90,18 +90,18 @@ def train(env_name='CartPole-v1', hidden_sizes=(32,), lr=1e-2, epochs=50, batch_
 if __name__ == '__main__':
 
     # Replication of CartPole-v1 results
-    # rets = train(
-    #     env_name='CartPole-v1',
-    #     hidden_sizes=(32,),
-    #     lr=1e-2,
-    #     epochs=50,
-    #     batch_size=5000
-    # )
-    # epochs = list(range(len(rets)))
-    # sns.lineplot(x=epochs, y=rets)
-    # plt.xlabel('Epochs')
-    # plt.ylabel('Average Return')
-    # plt.savefig('replicate_cartpole.png')
+    rets = train(
+        env_name='CartPole-v1',
+        hidden_sizes=(32,),
+        lr=1e-2,
+        epochs=50,
+        batch_size=5000
+    )
+    epochs = list(range(len(rets)))
+    sns.lineplot(x=epochs, y=rets)
+    plt.xlabel('Epochs')
+    plt.ylabel('Average Return')
+    plt.savefig('replicate_cartpole.png')
 
     # Hopper-v5
     rs = []
